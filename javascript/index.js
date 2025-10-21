@@ -11,6 +11,7 @@ const hasError = {
 };
 
 const formData = {};
+const spans = {}
 
 function createErrorSpan(input) {
   const span = document.createElement('span');
@@ -20,48 +21,54 @@ function createErrorSpan(input) {
   input.parentElement.insertAdjacentElement('afterend', span);
   return span;
 }
+
+function inputValidation(input, span) {
+  const inputValue = input.value.trim();
+  if (!inputValue) {
+    span.textContent = `${input.name} is required`
+    hasError[input.name] = true;
+    return;
+  }
+    span.textContent = ""
+    hasError[input.name] = false;
+    switch (input.name) {
+      case 'fullname':
+        formData.fullname = input.value;
+        break;
+      case 'email':
+        formData.email = input.value;
+        break;
+      case 'subject':
+        formData.subject = input.value;
+        break;
+    }
+};
+
 inputEl.forEach(input => {
-  const span = createErrorSpan(input);
+  spans[input.name] = createErrorSpan(input);
   input.title = `Please enter ${input.name}`
   input.addEventListener('input', () => {
-    const inputValue = input.value.trim();
-    if (!inputValue) {
-      span.textContent = `${input.name} is required`
-      hasError[input.name] = true;
-      return;
-    }
-      span.textContent = ""
-      hasError[input.name] = false;
-      switch (input.name) {
-        case 'fullname':
-          formData.fullname = input.value;
-          break;
-        case 'email':
-          formData.email = input.value;
-          break;
-        case 'subject':
-          formData.subject = input.value;
-          break;
-      }
-
+    inputValidation(input, spans[input.name])
   })
 })
 
 
+function textareaValidation(span) {
+  const value = textarea.value.trim();
+  if (value.length < 10) {
+    hasError.message = true;
+    span.textContent = `${textarea.name} must be more than ten characters`;
+  }else {
+    span.textContent = ""
+    formData.message = textarea.value;
+    hasError.message = false;
+  }
+}
 
-
- const span = createErrorSpan(textarea);
- span.classList.add('textarea-error')
+  spans.message = createErrorSpan(textarea);
+ spans.message.classList.add('textarea-error')
   textarea.addEventListener('input', (e) => {
-    const value = e.target.value.trim();
-    if (value.length < 10) {
-      hasError.message = true;
-      span.textContent = `${e.target.name} must be more than ten characters`;
-    }else {
-      span.textContent = ""
-      formData.message = e.target.value;
-      hasError.message = false;
-    }
+    textareaValidation(spans.message);
   });
 
 
@@ -71,47 +78,14 @@ successMsgEl.innerText = "";
 
 formEl.addEventListener('submit', async function(e){
   e.preventDefault();
-  document.querySelectorAll('.error-msg').forEach(el => el.remove());
+
   inputEl.forEach(input => {
-    const span = createErrorSpan(input);
-      const inputValue = input.value.trim();
-      if (!inputValue) {
-        span.textContent = `${input.name} is required`
-        hasError[input.name] = true;
-        return;
-      }
-        span.textContent = ""
-        hasError[input.name] = false;
-        switch (input.name) {
-          case 'fullname':
-            formData.fullname = input.value;
-            break;
-          case 'email':
-            formData.email = input.value;
-            break;
-          case 'subject':
-            formData.subject = input.value;
-            break;
-        }
+    inputValidation(input, spans[input.name]);
   })
-  const oldError = document.querySelector('.error-msg');
 
-    const span = createErrorSpan(textarea);
-  span.classList.add('textarea-error')
-      const value = textarea.value.trim();
-      if (value.length < 10) {
-        hasError.message = true;
-        span.textContent = `${textarea.name} must be more than ten characters`;
-      }else {
-        span.textContent = ""
-        formData.message = textarea.value;
-        hasError.message = false;
-      }
-
-
-
-  if (!hasError.fullname && !hasError.email && !hasError.subject && !hasError.message) {
-    document.querySelector('.submit-btn').innerText = 'Submiting...';
+    textareaValidation(spans.message);
+  if (!Object.values(hasError).includes(true)) {
+    document.querySelector('.submit-btn').innerText = 'Submitting...';
     document.querySelector('.submit-btn').style.opacity = 0.7;
     let successResponse = await sendFormData();
     if (successResponse) {
@@ -149,7 +123,7 @@ async function sendFormData() {
   } catch (error) {
     console.error(error);
     if (error.toString() === 'TypeError: Failed to fetch') {
-      successMsgEl.innerText = 'network failure please connect tot the internet';
+      successMsgEl.innerText = 'Network failure. Please connect to the internet.';
       successMsgEl.style.color = 'red'
       return;
     }
