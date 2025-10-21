@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact</title>
+  <link rel="stylesheet" href="./styles/index.css">
+</head>
+<body>
+  <header>
+    <nav class="links">
+      <a href="#">Contact</a>
+      <a href="./about.html">About me</a>
+    </nav>
+  </header>
+  <main data-testid="test-contact-page">
+    <section class="form-section">
+      <form method="post" autocomplete enctype="multipart/form-data" name="HNG form">
+        <div class="input-container">
+          <input type="text" name="fullname" id="fullname" required data-testid="test-contact-name" placeholder="" >
+          <label class="label" for="fullname">Fullname</label>
+        </div>
+        <div class="input-container">
+          <input type="email" placeholder="" name="email" id="email" required data-testid="test-contact-email">
+          <label class="label" for="email">email</label>
+      </div>
+
+
+      <div class="input-container">
+        <input type=""  placeholder="" name="subject" id="subject" required data-testid="test-contact-subject"> 
+        <label class="label" for="subject">subject</label>  
+      </div>
+      <div class="input-container">
+        <textarea name="message" id="message" required data-testid="test-contact-message" placeholder=""></textarea>
+        <label for="message">message</label>
+        <small>minimum of 10 characters</small>
+      </div>
+
+    
+        <button type="submit" class="submit-btn" value="submit" data-testid="test-contact-submit">Submit</button>
+        <span class="success-msg" data-testid="test-contact-success-message" ></span>
+      </form>
+    </section>
+  </main>
+
+  <script src="./javascript/index.js" defer></script>
+</body>
+</html>
